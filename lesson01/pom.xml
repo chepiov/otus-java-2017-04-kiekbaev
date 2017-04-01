@@ -17,6 +17,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>4.12</junit.version>
         <opencsv.version>2.3</opencsv.version>
+        <proguart.plugin.version>2.0.14</proguart.plugin.version>
     </properties>
 
     <dependencies>
@@ -37,17 +38,64 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <archive>
                         <manifest>
                             <mainClass>ru.otus.chepiov.l1.App</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>${project.name}</finalName>
+                    <finalName>${project.name}-assembled</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>${proguart.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <obfuscate>true</obfuscate>
+                    <injar>${project.name}-assembled.jar</injar>
+                    <outjar>${project.name}.jar</outjar>
+                    <!-- Don't duplicate! Already in assembled jar -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>ru.otus.chepiov</groupId>
+                            <artifactId>lesson01</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>net.sf.opencsv</groupId>
+                            <artifactId>opencsv</artifactId>
+                        </exclusion>
+                    </exclusions>
+                    <options>
+                        <!-- Keep entry point -->
+                        <option>
+                            -keep public class ru.otus.chepiov.l1.App { public static void main(java.lang.String[]); }
+                        </option>
+                    </options>
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                        <lib>${java.home}/lib/jsse.jar</lib>
+                    </libs>
                 </configuration>
             </plugin>
         </plugins>
