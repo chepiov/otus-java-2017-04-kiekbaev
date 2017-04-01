@@ -20,8 +20,9 @@ import java.util.Objects;
  */
 public class App {
     public static void main(String[] args) {
-        if (args.length != 3 || !Objects.equals(args[0], "-src") || !Objects.equals(args[2], "-target")) {
+        if (args.length != 4 || !Objects.equals(args[0], "-src") || !Objects.equals(args[2], "-target")) {
             System.out.println("Usage: -src <sourceFile> -target <targetFile>");
+            return;
         }
         if (Files.isRegularFile(Paths.get(args[1]))) {
             final List<String[]> srcContent;
