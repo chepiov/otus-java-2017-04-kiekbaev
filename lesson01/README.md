@@ -6,3 +6,5 @@ After:
 mvn clean package
 ```
 assembly jar will be ***lesson01-hw.jar*** 
+
+### Student: Anvar Kiekbaev / Анвар Киекбаев
