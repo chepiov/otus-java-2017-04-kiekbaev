@@ -1,4 +1,8 @@
-# otus.ru course
-[otus lessons](http://otus.ru/lessons)
+# Примеры для курса "Разработчик Java" в Otus.ru
 
-### Student: Anvar Kiekbaev / Анвар Киекбаев
+Группа 2017-04-1
+
+### Автор 
+Anvar Kiekbaev (Анвар Киекбаев)
+
+a.kiekbaev@chepiov.org
