@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>lesson04-hw</name>
+    <description>Lesson #4 home work</description>
+
+    <groupId>ru.otus.chepiov</groupId>
+    <artifactId>lesson04</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <junit.version>4.12</junit.version>
+        <slf4j.version>1.6.4</slf4j.version>
+        <logback.version>1.0.1</logback.version>
+        <mvn.surefire.plugin.version>2.19.1</mvn.surefire.plugin.version>
+        <common.arg.line>
+            -Xmx512m -Xms512m -XX:MaxMetaspaceSize=128m
+            -verbose:gc -XX:+PrintGCDateStamps
+            -XX:+PrintGCDetails -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=2M
+            -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./dumps/
+            -XX:OnOutOfMemoryError="kill -3 %p"
+            -DlogDir=${project.basedir}/logs
+        </common.arg.line>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${mvn.surefire.plugin.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>serial</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire.plugin.version}</version>
+                        <configuration>
+                            <argLine>
+                                ${common.arg.line} -Xloggc:./logs/serial_gc_pid_%p.log -XX:+UseSerialGC
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>parallel</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire.plugin.version}</version>
+                        <configuration>
+                            <argLine>
+                                ${common.arg.line} -Xloggc:./logs/parallel_gc_pid_%p.log -XX:+UseParallelGC
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>parallel-new</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire.plugin.version}</version>
+                        <configuration>
+                            <argLine>
+                                ${common.arg.line} -Xloggc:./logs/parallel_new_gc_pid_%p.log -XX:+UseParNewGC
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>cms</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire.plugin.version}</version>
+                        <configuration>
+                            <argLine>
+                                ${common.arg.line} -Xloggc:./logs/cms_gc_pid_%p.log
+                                -XX:+UseConcMarkSweepGC
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>g1</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire.plugin.version}</version>
+                        <configuration>
+                            <argLine>${common.arg.line} -Xloggc:./logs/g1_gc_pid_%p.log -XX:+UseG1GC</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
