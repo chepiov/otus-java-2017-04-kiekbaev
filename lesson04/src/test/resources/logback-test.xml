@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<appender name="FILE"-->
+              <!--class="ch.qos.logback.core.FileAppender">-->
+        <!--<file>${logDir}/statistic.log</file>-->
+        <!--<append>false</append>-->
+        <!--<immediateFlush>true</immediateFlush>-->
+        <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+            <!--<Pattern>%msg%n</Pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <logger name="ru.otus.chepiov" level="DEBUG"
+            additivity="false">
+        <!--<appender-ref ref="FILE"/>-->
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
