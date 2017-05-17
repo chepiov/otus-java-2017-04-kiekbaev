@@ -26,14 +26,6 @@ public final class Runner {
         final Map<String, AssertionError> assertionErrors = new HashMap<>();
         for (Class<?> clazz : testClasses) {
 
-            final Object instance;
-            try {
-                instance = clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                handleIllegalError(errors, clazz, e);
-                continue;
-            }
-
             final Optional<Method> beforeMethod = Arrays.stream(clazz.getMethods())
                     .filter(m -> m.isAnnotationPresent(Before.class))
                     .findFirst();
@@ -48,6 +40,9 @@ public final class Runner {
 
             testMethods.forEach(method -> {
                 try {
+
+                    final Object instance = clazz.newInstance();
+
                     if (beforeMethod.isPresent()) {
                         beforeMethod.get().invoke(instance);
                     }
@@ -57,7 +52,8 @@ public final class Runner {
                     if (afterMethod.isPresent()) {
                         afterMethod.get().invoke(instance);
                     }
-                } catch (IllegalAccessException | InvocationTargetException e) {
+
+                } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                     if (Objects.nonNull(e.getCause()) && e.getCause() instanceof AssertionError) {
                         handleAssertionError(assertionErrors, clazz, method, e);
                     } else {
