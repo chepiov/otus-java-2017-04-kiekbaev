@@ -166,3 +166,8 @@ $ mvn clean install
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 ```
+
+### Автор 
+Anvar Kiekbaev (Анвар Киекбаев)
+
+a.kiekbaev@chepiov.org
