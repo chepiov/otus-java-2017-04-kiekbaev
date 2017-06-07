@@ -10,6 +10,7 @@
 * [Test framework](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/master/lesson05)
 * Software Design для приложения ATM Department
 * [JSON Object Writer на основе javax.json](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/master/lesson08)
+* [Упрощенная JPA ORM](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/master/lesson09)
 
 ### Автор 
 Anvar Kiekbaev (Анвар Киекбаев)
