@@ -1,0 +1,21 @@
+package ru.otus.chepiov.l9.test;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
+
+/**
+ * Manually clearing H2 db.
+ *
+ * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
+ */
+public class ManualClearTest {
+
+    @Test
+    @Ignore
+    public void clearManually() throws SQLException, FileNotFoundException {
+        Helper.clearDb();
+    }
+}

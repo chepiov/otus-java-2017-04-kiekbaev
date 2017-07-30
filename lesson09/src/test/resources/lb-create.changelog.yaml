@@ -12,6 +12,7 @@ databaseChangeLog:
                   name: id
                   type: bigint(20)
                   autoIncrement: true
+                  startWith: 3
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -27,6 +28,9 @@ databaseChangeLog:
             tableName: user
             columns:
               - column:
+                  name: id
+                  value: 1
+              - column:
                   name: name
                   value: Peter Quill
               - column:
@@ -36,8 +40,134 @@ databaseChangeLog:
             tableName: user
             columns:
               - column:
+                  name: id
+                  value: 2
+              - column:
                   name: name
                   value: Bruce Wayne
               - column:
                   name: age
                   value: 40
+        - createTable:
+            tableName: address
+            columns:
+              - column:
+                  name: id
+                  type: bigint(20)
+                  autoIncrement: true
+                  startWith: 3
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint(20)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: address_user_fk
+                    references: user(id)
+              - column:
+                  name: street
+                  type: varchar(255)
+              - column:
+                  name: index
+                  type: int(6)
+        - insert:
+            tableName: address
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: index
+                  value: 127038
+              - column:
+                  name: street
+                  value: Missouri, Ocean Avenue, 3
+        - insert:
+            tableName: address
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: index
+                  value: 127039
+              - column:
+                  name: street
+                  value: Gotham City, Lake Avenue, 37
+        - createTable:
+            tableName: Phone
+            columns:
+              - column:
+                  name: id
+                  type: bigint(20)
+                  autoIncrement: true
+                  startWith: 4
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint(20)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: phone_user_fk
+                    references: user(id)
+              - column:
+                  name: number
+                  type: varchar(15)
+              - column:
+                  name: code
+                  type: int(4)
+        - insert:
+            tableName: Phone
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: number
+                  value: 8999988875
+              - column:
+                  name: code
+                  value: 7495
+        - insert:
+            tableName: Phone
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: number
+                  value: 8999988876
+              - column:
+                  name: code
+                  value: 7496
+        - insert:
+              tableName: Phone
+              columns:
+                - column:
+                    name: id
+                    value: 3
+                - column:
+                    name: user_id
+                    value: 2
+                - column:
+                    name: number
+                    value: 855558793
+                - column:
+                    name: code
+                    value: 7493

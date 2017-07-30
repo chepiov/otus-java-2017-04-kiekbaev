@@ -1,4 +1,4 @@
-package ru.otus.chepiov.l9;
+package ru.otus.chepiov.db.api;
 
 import java.util.Objects;
 

@@ -1,22 +1,25 @@
 package ru.otus.chepiov.l9;
 
+import ru.otus.chepiov.db.api.DataSet;
+import ru.otus.chepiov.db.api.DBService;
+import ru.otus.chepiov.db.model.User;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Queries executor.
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
-public final class Executor {
+public final class Executor implements DBService<User> {
 
-    private final Map<Class<? extends DataSet>, Meta> metas;
+    private final Map<Class<? extends DataSet>, Meta<?>> metas;
 
     private final Supplier<Connection> connSup;
 
@@ -37,23 +40,18 @@ public final class Executor {
             }
         };
 
-        metas = entities.stream()
-                .map(Meta::new)
-                .collect(Collectors.toMap(Meta::getEntityClass, Function.identity()));
+        metas = new HashMap<>();
+        entities.forEach(e -> Meta.buildAndSaveMeta(e, metas));
     }
 
-    /**
-     * Saves dataSet.
-     * Sets generated id to it.
-     *
-     * @param dataSet to save
-     */
-    public <T extends DataSet> void save(T dataSet) {
+    @Override
+    public void save(final User dataSet) {
 
-        try (Connection conn = connSup.get()) {
+        try (final Connection conn = connSup.get()) {
             conn.setAutoCommit(false);
             try {
-                metas.get(dataSet.getClass()).save(dataSet, conn);
+                @SuppressWarnings("unchecked") final Meta<User> meta = (Meta<User>) metas.get(dataSet.getClass());
+                meta.save(dataSet, conn);
                 conn.commit();
             } catch (Exception e) {
                 conn.rollback();
@@ -65,18 +63,13 @@ public final class Executor {
         }
     }
 
-    /**
-     * Load dataSet by id.
-     *
-     * @param id    to fetch
-     * @param clazz to map
-     * @return Loaded dataSet or null if not found
-     */
-    public <T extends DataSet> T load(final Long id, final Class<T> clazz) {
-        try (Connection conn = connSup.get()) {
+    @Override
+    public User load(final Long id) {
+        try (final Connection conn = connSup.get()) {
             conn.setAutoCommit(false);
             try {
-                final T result = metas.get(clazz).load(id, conn);
+                @SuppressWarnings("unchecked") final Meta<User> meta = (Meta<User>) metas.get(User.class);
+                final User result = meta.load(id, conn);
                 conn.commit();
                 return result;
             } catch (Exception e) {

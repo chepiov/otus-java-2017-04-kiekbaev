@@ -6,4 +6,8 @@ databaseChangeLog:
         runAlways: true
         changes:
           - dropTable:
+              tableName: phone
+          - dropTable:
+              tableName: address
+          - dropTable:
               tableName: user
