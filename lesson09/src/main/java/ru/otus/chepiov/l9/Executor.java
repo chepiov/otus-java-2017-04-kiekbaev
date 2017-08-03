@@ -35,7 +35,7 @@ public final class Executor implements DBService<User> {
 
     private final BlockingQueue<Connection> pool;
 
-    private volatile AtomicBoolean on = new AtomicBoolean(true);
+    private final AtomicBoolean on = new AtomicBoolean(true);
 
     public Executor(final String driverName,
                     final String jdbcUrl,
@@ -55,7 +55,7 @@ public final class Executor implements DBService<User> {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            Connection connProxy = (Connection) Proxy.newProxyInstance(
+            final Connection connProxy = (Connection) Proxy.newProxyInstance(
                     Connection.class.getClassLoader(),
                     new Class[]{Connection.class},
                     new VoidWithoutArgsHandler<>(
