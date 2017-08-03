@@ -29,6 +29,8 @@ import java.util.stream.IntStream;
  */
 public final class Executor implements DBService<User> {
 
+    private static final int MAX_WAITING = 5;
+
     private final Map<Class<? extends DataSet>, Meta<?>> metas;
 
     private final Supplier<Connection> connSup;
@@ -76,7 +78,7 @@ public final class Executor implements DBService<User> {
 
         connSup = () -> {
             try {
-                return pool.poll(5, TimeUnit.SECONDS);
+                return pool.poll(MAX_WAITING, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
