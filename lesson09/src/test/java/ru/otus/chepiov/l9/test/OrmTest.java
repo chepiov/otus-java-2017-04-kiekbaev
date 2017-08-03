@@ -29,11 +29,11 @@ import java.util.function.Supplier;
 public class OrmTest {
 
     private Supplier<DBService<User>> dbServiceCreator;
-    private DBService<User> DBService;
+    private DBService<User> dbService;
 
 
     /**
-     * Supplier because of firstly liquidbase initialization needed.
+     * Supplier because of firstly liquibase initialization needed.
      *
      * @param dbServiceCreator to use
      */
@@ -49,7 +49,7 @@ public class OrmTest {
     @Before
     public void before() throws ClassNotFoundException, SQLException, LiquibaseException {
         Helper.prepareDb();
-        this.DBService = dbServiceCreator.get();
+        this.dbService = dbServiceCreator.get();
     }
 
     @Test
@@ -69,7 +69,7 @@ public class OrmTest {
         }};
         ironMan.setPhones(ironPhones);
 
-        DBService.save(ironMan);
+        dbService.save(ironMan);
         Assert.assertTrue(ironMan.persisted());
         final Connection conn = DriverManager.getConnection(Helper.JDBC_H2_TEST_URL);
         final ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM user WHERE name = 'Tony Stark' AND age = 45");
@@ -100,12 +100,12 @@ public class OrmTest {
 
     @Test
     public void testLoad() throws SQLException {
-        final User starLord = DBService.load(1L);
+        final User starLord = dbService.load(1L);
         Assert.assertNotNull("Where is the Star Lord???", starLord);
         Assert.assertTrue(starLord.persisted());
         Assert.assertNotNull(starLord.getAddress());
         Assert.assertNotNull(starLord.getPhones());
-        final User batman = DBService.load(2L);
+        final User batman = dbService.load(2L);
         Assert.assertNotNull("Where is the Batman???", batman);
         Assert.assertTrue(batman.persisted());
         Assert.assertNotNull(batman.getAddress());
@@ -114,6 +114,7 @@ public class OrmTest {
 
     @After
     public void after() throws SQLException, LiquibaseException {
+        dbService.close();
         Helper.clearTables();
     }
 
@@ -134,18 +135,20 @@ public class OrmTest {
                                             add(User.class);
                                             add(Address.class);
                                             add(Phone.class);
-                                        }})
+                                        }},
+                                        10)
 
                 },
                 {
                         (Supplier<DBService<User>>) () ->
-                                new HibernateDBService(Helper.H2_DRIVER,
+                                new HibernateDBService(Helper.H2_DATASOURCE,
                                         Helper.JDBC_H2_TEST_URL,
                                         new HashSet<Class<? extends DataSet>>() {{
                                             add(User.class);
                                             add(Address.class);
                                             add(Phone.class);
-                                        }})
+                                        }},
+                                        10)
                 }
         });
     }

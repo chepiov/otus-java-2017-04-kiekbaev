@@ -95,6 +95,7 @@ final class Meta<T extends DataSet> {
         meta.metas = metas;
     }
 
+    @SuppressWarnings("ConstantConditions")
     void save(final T entity,
               final Connection connection)
             throws SQLException {
@@ -123,27 +124,31 @@ final class Meta<T extends DataSet> {
                     throw new IllegalArgumentException("Not nullable column but entity field is null. Entity: "
                             + entity.getClass() + ", field: " + field.getName());
                 }
-                if (type.equals(String.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setString(i, (String) value);
-                } else if (type.equals(Long.class) || type.equals(long.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setLong(i, (Long) value);
-                } else if (type.equals(Integer.class) || type.equals(int.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setInt(i, (Integer) value);
-                } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setBoolean(i, (Boolean) value);
-                } else if (type.equals(Short.class) || type.equals(short.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setShort(i, (Short) value);
-                } else if (type.equals(Double.class) || type.equals(double.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setDouble(i, (Double) value);
-                } else if (type.equals(Float.class) || type.equals(float.class)) {
-                    //noinspection ConstantConditions
-                    stmt.setFloat(i, (Float) value);
+                switch (Types.fromClass(type)) {
+                    case STRING:
+                        stmt.setString(i, (String) value);
+                        break;
+                    case LONG:
+                        stmt.setLong(i, (Long) value);
+                        break;
+                    case INT:
+                        stmt.setInt(i, (Integer) value);
+                        break;
+                    case BOOLEAN:
+                        stmt.setBoolean(i, (Boolean) value);
+                        break;
+                    case SHORT:
+                        stmt.setShort(i, (Short) value);
+                        break;
+                    case FLOAT:
+                        stmt.setFloat(i, (Float) value);
+                        break;
+                    case DOUBLE:
+                        stmt.setDouble(i, (Double) value);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Illegal type");
+
                 }
                 field.setAccessible(false);
             }
@@ -280,20 +285,30 @@ final class Meta<T extends DataSet> {
                         final Class<?> type = field.getType();
                         final String column = description.column;
                         field.setAccessible(true);
-                        if (type.equals(String.class)) {
-                            field.set(entity, rs.getString(column));
-                        } else if (type.equals(Long.class)) {
-                            field.set(entity, rs.getLong(column));
-                        } else if (type.equals(Integer.class)) {
-                            field.set(entity, rs.getInt(column));
-                        } else if (type.equals(Boolean.class)) {
-                            field.set(entity, rs.getBoolean(column));
-                        } else if (type.equals(Short.class)) {
-                            field.set(entity, rs.getShort(column));
-                        } else if (type.equals(Double.class)) {
-                            field.set(entity, rs.getDouble(column));
-                        } else if (type.equals(Float.class)) {
-                            field.set(entity, rs.getFloat(column));
+                        switch (Types.fromClass(type)) {
+                            case STRING:
+                                field.set(entity, rs.getString(column));
+                                break;
+                            case LONG:
+                                field.set(entity, rs.getLong(column));
+                                break;
+                            case INT:
+                                field.set(entity, rs.getInt(column));
+                                break;
+                            case BOOLEAN:
+                                field.set(entity, rs.getBoolean(column));
+                                break;
+                            case SHORT:
+                                field.set(entity, rs.getShort(column));
+                                break;
+                            case DOUBLE:
+                                field.set(entity, rs.getDouble(column));
+                                break;
+                            case FLOAT:
+                                field.set(entity, rs.getFloat(column));
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Illegal type of field");
                         }
                         field.setAccessible(false);
                     }

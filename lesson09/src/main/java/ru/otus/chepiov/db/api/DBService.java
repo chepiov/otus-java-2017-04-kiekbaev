@@ -18,9 +18,14 @@ public interface DBService<T extends DataSet> {
     /**
      * Load dataSet by id.
      *
-     * @param id    to fetch
+     * @param id to fetch
      * @return Loaded dataSet or null if not found
      */
     T load(final Long id);
+
+    /**
+     * Gracefully closing service.
+     */
+    void close();
 
 }

@@ -24,6 +24,7 @@ class Helper {
 
     static final String JDBC_H2_TEST_URL = "jdbc:h2:~/test";
     static final String H2_DRIVER = "org.h2.Driver";
+    static final String H2_DATASOURCE = "org.h2.jdbcx.JdbcDataSource";
 
     private Helper() {
         throw new AssertionError("Non-instantiable");

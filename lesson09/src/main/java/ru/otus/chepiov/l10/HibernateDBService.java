@@ -24,21 +24,26 @@ public class HibernateDBService implements DBService<User> {
 
     private final SessionFactory sessionFactory;
 
-    public HibernateDBService(final String driverName,
+    public HibernateDBService(final String dataSource,
                               final String jdbcUrl,
-                              final Set<Class<? extends DataSet>> entities) {
+                              final Set<Class<? extends DataSet>> entities,
+                              final int poolSize) {
 
         final Configuration configuration = new Configuration();
 
         entities.forEach(configuration::addAnnotatedClass);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        configuration.setProperty("hibernate.connection.driver_class", driverName);
-        configuration.setProperty("hibernate.connection.url", jdbcUrl);
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
         configuration.setProperty("hibernate.connection.useSSL", "false");
         configuration.setProperty("hibernate.enable_lazy_load_no_trans", "true");
+
+        // HikariCP
+        configuration.setProperty("hibernate.connection.provider_class", "com.zaxxer.hikari.hibernate.HikariConnectionProvider");
+        configuration.setProperty("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
+        configuration.setProperty("hibernate.hikari.dataSourceClassName", dataSource);
+        configuration.setProperty("hibernate.hikari.dataSource.url", jdbcUrl);
 
         sessionFactory = createSessionFactory(configuration);
     }
@@ -57,6 +62,11 @@ public class HibernateDBService implements DBService<User> {
             final UserDAO dao = new UserDAO(session);
             return dao.getUser(id);
         });
+    }
+
+    @Override
+    public void close() {
+        sessionFactory.close();
     }
 
     private static SessionFactory createSessionFactory(Configuration configuration) {
