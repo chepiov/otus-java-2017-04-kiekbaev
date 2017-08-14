@@ -29,7 +29,7 @@ User содержит один Address (_one-to-one_) и много телефо
 основе неё интерфейс `DBService`
 * реализовать интерфейс `DBService` на основе `Hibernate 5.2`
 
-`ru.otus.chepiov.l9.Executor` - реализация ORM, принимает в конструкторе информацию о базе данных,
+`ru.otus.chepiov.l9.Executor` - реализация `DBService`, принимает в конструкторе информацию о базе данных,
 а так же классы `persistence` сущностей. `Persistence` сущности 
 должны реализовывать интерфейс `ru.otus.db.api.DataSet`.
  

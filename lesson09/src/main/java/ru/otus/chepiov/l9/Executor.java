@@ -1,7 +1,7 @@
 package ru.otus.chepiov.l9;
 
-import ru.otus.chepiov.db.api.DBService;
 import ru.otus.chepiov.db.api.DataSet;
+import ru.otus.chepiov.db.api.DBService;
 import ru.otus.chepiov.db.model.User;
 
 import java.lang.reflect.InvocationHandler;
@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
-public final class Executor implements DBService<User> {
+public final class Executor implements DBService {
 
     private static final int MAX_WAITING = 5;
 

@@ -28,8 +28,8 @@ import java.util.function.Supplier;
 @RunWith(Parameterized.class)
 public class OrmTest {
 
-    private Supplier<DBService<User>> dbServiceCreator;
-    private DBService<User> dbService;
+    private Supplier<DBService> dbServiceCreator;
+    private DBService service;
 
 
     /**
@@ -37,7 +37,7 @@ public class OrmTest {
      *
      * @param dbServiceCreator to use
      */
-    public OrmTest(final Supplier<DBService<User>> dbServiceCreator) {
+    public OrmTest(final Supplier<DBService> dbServiceCreator) {
         this.dbServiceCreator = dbServiceCreator;
     }
 
@@ -49,7 +49,7 @@ public class OrmTest {
     @Before
     public void before() throws ClassNotFoundException, SQLException, LiquibaseException {
         Helper.prepareDb();
-        this.dbService = dbServiceCreator.get();
+        this.service = dbServiceCreator.get();
     }
 
     @Test
@@ -69,7 +69,7 @@ public class OrmTest {
         }};
         ironMan.setPhones(ironPhones);
 
-        dbService.save(ironMan);
+        service.save(ironMan);
         Assert.assertTrue(ironMan.persisted());
         final Connection conn = DriverManager.getConnection(Helper.JDBC_H2_TEST_URL);
         final ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM user WHERE name = 'Tony Stark' AND age = 45");
@@ -100,12 +100,12 @@ public class OrmTest {
 
     @Test
     public void testLoad() throws SQLException {
-        final User starLord = dbService.load(1L);
+        final User starLord = service.load(1L);
         Assert.assertNotNull("Where is the Star Lord???", starLord);
         Assert.assertTrue(starLord.persisted());
         Assert.assertNotNull(starLord.getAddress());
         Assert.assertNotNull(starLord.getPhones());
-        final User batman = dbService.load(2L);
+        final User batman = service.load(2L);
         Assert.assertNotNull("Where is the Batman???", batman);
         Assert.assertTrue(batman.persisted());
         Assert.assertNotNull(batman.getAddress());
@@ -114,7 +114,7 @@ public class OrmTest {
 
     @After
     public void after() throws SQLException, LiquibaseException {
-        dbService.close();
+        service.close();
         Helper.clearTables();
     }
 
@@ -127,7 +127,7 @@ public class OrmTest {
     public static Collection<Object[]> serviceImplementations() {
         return Arrays.asList(new Object[][]{
                 {
-                        (Supplier<DBService<User>>) () ->
+                        (Supplier<DBService>) () ->
                                 new Executor(
                                         Helper.H2_DRIVER,
                                         Helper.JDBC_H2_TEST_URL,
@@ -140,7 +140,7 @@ public class OrmTest {
 
                 },
                 {
-                        (Supplier<DBService<User>>) () ->
+                        (Supplier<DBService>) () ->
                                 new HibernateDBService(Helper.H2_DATASOURCE,
                                         Helper.JDBC_H2_TEST_URL,
                                         new HashSet<Class<? extends DataSet>>() {{

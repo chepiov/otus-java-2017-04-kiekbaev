@@ -20,7 +20,7 @@ import java.util.function.Function;
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
-public class HibernateDBService implements DBService<User> {
+public class HibernateDBService implements DBService {
 
     private final SessionFactory sessionFactory;
 
@@ -52,7 +52,7 @@ public class HibernateDBService implements DBService<User> {
     public void save(final User dataSet) {
         localTx(session -> {
             final UserDAO dao = new UserDAO(session);
-            dao.saveUser(dataSet);
+            dao.save(dataSet);
         });
     }
 
@@ -60,7 +60,7 @@ public class HibernateDBService implements DBService<User> {
     public User load(final Long id) {
         return localTx(session -> {
             final UserDAO dao = new UserDAO(session);
-            return dao.getUser(id);
+            return dao.load(id);
         });
     }
 
@@ -80,8 +80,8 @@ public class HibernateDBService implements DBService<User> {
         try (final Session session
                      = sessionFactory.withOptions().interceptor(new UserSaveInterceptor()).openSession()) {
 
-            Transaction transaction = session.beginTransaction();
-            T result = function.apply(session);
+            final Transaction transaction = session.beginTransaction();
+            final T result = function.apply(session);
             transaction.commit();
             return result;
         }
@@ -90,7 +90,7 @@ public class HibernateDBService implements DBService<User> {
     private void localTx(final Consumer<Session> function) {
         try (final Session session
                      = sessionFactory.withOptions().interceptor(new UserSaveInterceptor()).openSession()) {
-            Transaction transaction = session.beginTransaction();
+            final Transaction transaction = session.beginTransaction();
             function.accept(session);
             transaction.commit();
         }

@@ -1,31 +1,31 @@
 package ru.otus.chepiov.db.api;
 
+import ru.otus.chepiov.db.model.User;
+
 /**
- * Database service.
+ * Database API.
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
-public interface DBService<T extends DataSet> {
-
+public interface DBService {
     /**
-     * Saves dataSet.
+     * Saves user.
      * Sets generated id to it.
      *
-     * @param dataSet to save
+     * @param user to save
      */
-    void save(final T dataSet);
+    void save(final User user);
 
     /**
-     * Load dataSet by id.
+     * Loads user by id.
      *
      * @param id to fetch
-     * @return Loaded dataSet or null if not found
+     * @return Loaded user or null if not found
      */
-    T load(final Long id);
+    User load(final Long id);
 
     /**
-     * Gracefully closing service.
+     * Gracefully close database service.
      */
     void close();
-
 }
