@@ -1,14 +1,24 @@
 package ru.otus.chepiov.db.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.otus.chepiov.db.api.DataSet;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
 @Entity
 @Table(name = "phone")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE )
 public class Phone implements DataSet {
 
     @Id

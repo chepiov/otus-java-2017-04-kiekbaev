@@ -1,16 +1,21 @@
 package ru.otus.chepiov.l10;
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.management.ManagementService;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import ru.otus.chepiov.db.api.DataSet;
 import ru.otus.chepiov.db.api.DBService;
 import ru.otus.chepiov.db.model.User;
 import ru.otus.chepiov.l10.dao.UserDAO;
 
+import javax.management.MBeanServer;
+import java.lang.management.ManagementFactory;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,22 +35,13 @@ public class HibernateDBService implements DBService {
                               final int poolSize) {
 
         final Configuration configuration = new Configuration();
-
         entities.forEach(configuration::addAnnotatedClass);
-
-        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        configuration.setProperty("hibernate.show_sql", "true");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
-        configuration.setProperty("hibernate.connection.useSSL", "false");
-        configuration.setProperty("hibernate.enable_lazy_load_no_trans", "true");
-
-        // HikariCP
-        configuration.setProperty("hibernate.connection.provider_class", "com.zaxxer.hikari.hibernate.HikariConnectionProvider");
-        configuration.setProperty("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
-        configuration.setProperty("hibernate.hikari.dataSourceClassName", dataSource);
-        configuration.setProperty("hibernate.hikari.dataSource.url", jdbcUrl);
-
+        hibernateConfiguration(configuration);
+        poolConfiguration(dataSource, jdbcUrl, poolSize, configuration);
+        cacheConfiguration(configuration);
         sessionFactory = createSessionFactory(configuration);
+
+        registerCacheMBean();
     }
 
     @Override
@@ -67,6 +63,35 @@ public class HibernateDBService implements DBService {
     @Override
     public void close() {
         sessionFactory.close();
+    }
+
+    private void hibernateConfiguration(Configuration configuration) {
+        configuration.setProperty(Environment.DIALECT, "org.hibernate.dialect.H2Dialect");
+        configuration.setProperty(Environment.SHOW_SQL, "true");
+        configuration.setProperty(Environment.FORMAT_SQL, "true");
+        configuration.setProperty(Environment.HBM2DDL_AUTO, "validate");
+        configuration.setProperty(Environment.ENABLE_LAZY_LOAD_NO_TRANS, "true");
+        configuration.setProperty(Environment.GENERATE_STATISTICS, "true");
+    }
+
+    private void poolConfiguration(String dataSource, String jdbcUrl, int poolSize, Configuration configuration) {
+        configuration.setProperty(Environment.CONNECTION_PROVIDER, "com.zaxxer.hikari.hibernate.HikariConnectionProvider");
+        configuration.setProperty("hibernate.hikari.maximumPoolSize", Integer.toString(poolSize));
+        configuration.setProperty("hibernate.hikari.dataSourceClassName", dataSource);
+        configuration.setProperty("hibernate.hikari.dataSource.url", jdbcUrl);
+    }
+
+    private void cacheConfiguration(Configuration configuration) {
+        configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
+        configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
+        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory");
+        configuration.setProperty("net.sf.ehcache.configurationResourceName", "ehcache.xml");
+    }
+
+    private void registerCacheMBean() {
+        CacheManager manager = CacheManager.getCacheManager(CacheManager.DEFAULT_NAME);
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        ManagementService.registerMBeans(manager, mBeanServer, false, false, true, true);
     }
 
     private static SessionFactory createSessionFactory(Configuration configuration) {

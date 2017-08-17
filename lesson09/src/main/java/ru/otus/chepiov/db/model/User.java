@@ -1,8 +1,18 @@
 package ru.otus.chepiov.db.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.otus.chepiov.db.api.DataSet;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.List;
 
 /**
@@ -10,6 +20,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "user")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User implements DataSet {
 
     @Id
@@ -22,6 +33,7 @@ public class User implements DataSet {
     private Integer age;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Phone> phones;
 

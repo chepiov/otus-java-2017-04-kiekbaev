@@ -1,5 +1,7 @@
 package ru.otus.chepiov.l9;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.chepiov.db.api.DataSet;
 
 import javax.persistence.*;
@@ -35,6 +37,8 @@ final class Meta<T extends DataSet> {
     private Map<Class<? extends DataSet>, Meta<?>> metas;
 
     private static final String RELATION_COL_PAT = "#rel_col#";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Meta.class);
 
     private Meta(final Class<T> entityClass) {
 
@@ -152,6 +156,7 @@ final class Meta<T extends DataSet> {
                 }
                 field.setAccessible(false);
             }
+            LOGGER.debug(stmt.toString());
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating user failed, no rows affected.");
@@ -196,6 +201,7 @@ final class Meta<T extends DataSet> {
             throws SQLException {
         final PreparedStatement stmt = connection.prepareStatement(this.loadQuery);
         stmt.setLong(1, id);
+        LOGGER.debug(stmt.toString());
         final ResultSet rs = stmt.executeQuery();
         final List<T> extract = extract(rs);
         if (extract.size() != 1) {
@@ -217,7 +223,7 @@ final class Meta<T extends DataSet> {
                 }
             } catch (Exception ignore) {
                 ignore.printStackTrace();
-                System.out.println("Unable to load One-to-One relation");
+                LOGGER.error("Unable to load One-to-One relation");
             }
         });
         this.oneToManyFields.forEach(f -> {
@@ -235,7 +241,7 @@ final class Meta<T extends DataSet> {
 
             } catch (Exception ignore) {
                 ignore.printStackTrace();
-                System.out.println("Unable to load One-to-Many relation");
+                LOGGER.error("Unable to load One-to-Many relation");
             }
         });
         return result;
@@ -268,6 +274,7 @@ final class Meta<T extends DataSet> {
                 this.loadByRelationQuery.replace(RELATION_COL_PAT,
                         relColumn.columnName));
         stmt.setLong(1, relId);
+        LOGGER.debug(stmt.toString());
         ResultSet rs = stmt.executeQuery();
         return extract(rs);
     }

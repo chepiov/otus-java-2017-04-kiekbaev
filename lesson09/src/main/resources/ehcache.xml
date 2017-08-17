@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ehcache>
+    <defaultCache maxEntriesLocalHeap="10"
+                  eternal="false"
+                  timeToIdleSeconds="600"
+                  timeToLiveSeconds="600">
+    </defaultCache>
+    <cache name="org.hibernate.cache.StandardQueryCache"
+           maxEntriesLocalHeap="5"
+           eternal="false"
+           timeToLiveSeconds="120">
+    </cache>
+    <cache name="org.hibernate.cache.UpdateTimestampsCache"
+           maxEntriesLocalHeap="5000"
+           eternal="true">
+    </cache>
+
+    <cache name="ru.otus.chepiov.db.model.User"
+           maxEntriesLocalHeap="100"
+           timeToLiveSeconds="60">
+    </cache>
+    <cache name="ru.otus.chepiov.db.model.User.phones"
+           maxEntriesLocalHeap="100"
+           eternal="false"
+           timeToIdleSeconds="60">
+    </cache>
+    <cache name="ru.otus.chepiov.db.model.Address"
+           maxEntriesLocalHeap="100"
+           eternal="true">
+    </cache>
+    <cache name="ru.otus.chepiov.db.model.Phone"
+           maxEntriesLocalHeap="100"
+           eternal="true">
+    </cache>
+</ehcache>

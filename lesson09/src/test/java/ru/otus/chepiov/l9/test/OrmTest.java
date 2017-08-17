@@ -54,20 +54,8 @@ public class OrmTest {
 
     @Test
     public void testSave() throws ClassNotFoundException, SQLException {
-        final User ironMan = new User();
-        ironMan.setName("Tony Stark");
-        ironMan.setAge(45);
-        final Address ironAddress = new Address();
-        ironAddress.setStreet("Iron street");
-        ironAddress.setIndex(423511);
-        ironMan.setAddress(ironAddress);
-        final List<Phone> ironPhones = new ArrayList<Phone>() {{
-            final Phone ironPhone = new Phone();
-            ironPhone.setCode(7888);
-            ironPhone.setNumber("8985547525");
-            add(ironPhone);
-        }};
-        ironMan.setPhones(ironPhones);
+
+        final User ironMan = Helper.createIronMan();
 
         service.save(ironMan);
         Assert.assertTrue(ironMan.persisted());

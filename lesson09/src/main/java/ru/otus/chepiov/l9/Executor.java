@@ -1,9 +1,15 @@
 package ru.otus.chepiov.l9;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.chepiov.db.api.DataSet;
 import ru.otus.chepiov.db.api.DBService;
 import ru.otus.chepiov.db.model.User;
+import ru.otus.chepiov.l11.CacheEngine;
+import ru.otus.chepiov.l11.SoftRefCacheEngine;
 
+import javax.management.*;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -39,6 +45,10 @@ public final class Executor implements DBService {
 
     private final AtomicBoolean on = new AtomicBoolean(true);
 
+    private final CacheEngine<Long, User> cache = new SoftRefCacheEngine<>();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
+
     public Executor(final String driverName,
                     final String jdbcUrl,
                     final Set<Class<? extends DataSet>> entities,
@@ -64,7 +74,7 @@ public final class Executor implements DBService {
                             target,
                             on,
                             (conn) -> {
-                                System.out.println("Returning to pool");
+                                LOGGER.debug("Returning to pool");
                                 try {
                                     conn.rollback();
                                 } catch (SQLException ignore) {
@@ -86,6 +96,23 @@ public final class Executor implements DBService {
 
         metas = new HashMap<>();
         entities.forEach(e -> Meta.buildAndSaveMeta(e, metas));
+
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName name;
+        try {
+            name = new ObjectName("ru.otus.chepiov:type=SoftRefCacheEngine");
+            if(mbs.isRegistered(name)){
+                mbs.unregisterMBean(name);
+            }
+            mbs.registerMBean(cache, name);
+        } catch (MalformedObjectNameException
+                | NotCompliantMBeanException
+                | InstanceAlreadyExistsException
+                | InstanceNotFoundException
+                | MBeanRegistrationException e) {
+            LOGGER.error("Can't expose MBean for cache", e);
+        }
+
     }
 
     @Override
@@ -97,9 +124,11 @@ public final class Executor implements DBService {
                 @SuppressWarnings("unchecked") final Meta<User> meta = (Meta<User>) metas.get(dataSet.getClass());
                 meta.save(dataSet, conn);
                 conn.commit();
+                cache.put(dataSet.getId(), dataSet);
             } catch (Exception e) {
                 conn.rollback();
                 conn.setAutoCommit(true);
+                cache.dispose();
                 throw e;
             }
         } catch (SQLException e) {
@@ -109,6 +138,10 @@ public final class Executor implements DBService {
 
     @Override
     public User load(final Long id) {
+        final User cached = cache.get(id);
+        if (Objects.nonNull(cached)) {
+            return cached;
+        }
         try (final Connection conn = connSup.get()) {
             conn.setAutoCommit(false);
             try {
@@ -136,6 +169,7 @@ public final class Executor implements DBService {
                 e.printStackTrace();
             }
         });
+
     }
 
     private static class VoidWithoutArgsHandler<T> implements InvocationHandler {

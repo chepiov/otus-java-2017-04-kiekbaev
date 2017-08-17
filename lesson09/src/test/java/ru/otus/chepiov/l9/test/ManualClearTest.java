@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 /**
- * Manually clearing H2 db.
+ * Manually clearing H2 db. Just for developing purposes.
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
