@@ -65,5 +65,8 @@ public class SoftRefCacheEngine<K, V> implements CacheEngine<K, V>, SoftRefCache
     @Override
     public void dispose() {
         this.backed.clear();
+        this.hitCount.set(0);
+        this.missCount.set(0);
+
     }
 }

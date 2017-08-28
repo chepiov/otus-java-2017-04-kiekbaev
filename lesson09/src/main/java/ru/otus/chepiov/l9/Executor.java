@@ -16,10 +16,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -75,6 +72,7 @@ public final class Executor implements DBService {
                             on,
                             (conn) -> {
                                 LOGGER.debug("Returning to pool");
+                                LOGGER.debug("Pool size: {}", pool.size());
                                 try {
                                     conn.rollback();
                                 } catch (SQLException ignore) {
@@ -88,6 +86,8 @@ public final class Executor implements DBService {
 
         connSup = () -> {
             try {
+                LOGGER.debug("Getting from pool");
+                LOGGER.debug("Pool size: {}", pool.size());
                 return pool.poll(MAX_WAITING, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -101,7 +101,7 @@ public final class Executor implements DBService {
         ObjectName name;
         try {
             name = new ObjectName("ru.otus.chepiov:type=SoftRefCacheEngine");
-            if(mbs.isRegistered(name)){
+            if (mbs.isRegistered(name)) {
                 mbs.unregisterMBean(name);
             }
             mbs.registerMBean(cache, name);
@@ -147,6 +147,30 @@ public final class Executor implements DBService {
             try {
                 @SuppressWarnings("unchecked") final Meta<User> meta = (Meta<User>) metas.get(User.class);
                 final User result = meta.load(id, conn);
+                conn.commit();
+                cache.put(id, result);
+                return result;
+            } catch (Exception e) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads without one-to-x and cache.
+     *
+     * @return all users
+     */
+    public List<User> loadAll() {
+        try (final Connection conn = connSup.get()) {
+            conn.setAutoCommit(false);
+            try {
+                @SuppressWarnings("unchecked") final Meta<User> meta = (Meta<User>) metas.get(User.class);
+                final List<User> result = meta.loadAll(conn);
                 conn.commit();
                 return result;
             } catch (Exception e) {
@@ -195,10 +219,15 @@ public final class Executor implements DBService {
                     && on.get()
                     && method.getName().equals(methodName)
                     && method.getReturnType().equals(Void.TYPE)) {
-                hook.accept(target);
+                //noinspection unchecked
+                hook.accept((T) proxy);
                 return null;
             } else return method.invoke(target, args);
 
         }
+    }
+
+    public CacheEngine<Long, User> getCache() {
+        return cache;
     }
 }

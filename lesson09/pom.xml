@@ -19,6 +19,8 @@
         <h2.version>1.4.195</h2.version>
         <liquibase-core.version>3.5.3</liquibase-core.version>
         <snakeyaml.version>1.18</snakeyaml.version>
+        <jetty.version>9.4.5.v20170502</jetty.version>
+        <jade4j.version>1.2.5</jade4j.version>
     </properties>
 
     <dependencies>
@@ -61,6 +63,21 @@
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
             <version>${liquibase.log.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.neuland-bfi</groupId>
+            <artifactId>jade4j</artifactId>
+            <version>${jade4j.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>

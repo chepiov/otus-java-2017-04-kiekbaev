@@ -33,6 +33,7 @@ final class Meta<T extends DataSet> {
     private final Map<Class<?>, RelDescription> ownerRelations;
     private final Set<Field> oneToManyFields;
     private final Set<Field> oneToOneFields;
+    private final String loadAllQuery;
 
     private Map<Class<? extends DataSet>, Meta<?>> metas;
 
@@ -59,6 +60,7 @@ final class Meta<T extends DataSet> {
         final String idColumn = getIdColumn(entityClass, fields);
 
         this.loadQuery = "SELECT * FROM " + tableName + " WHERE " + idColumn + " = ?";
+        this.loadAllQuery = "SELECT * FROM " + tableName;
         this.loadByRelationQuery = "SELECT * FROM " + tableName + " WHERE " + RELATION_COL_PAT + " = ?";
 
         this.idColumnName = idColumn;
@@ -194,6 +196,13 @@ final class Meta<T extends DataSet> {
             throw new IllegalArgumentException("Something wrong", e);
         }
 
+    }
+
+    List<T> loadAll(final Connection connection) throws SQLException {
+        final PreparedStatement stmt = connection.prepareStatement(this.loadAllQuery);
+        LOGGER.debug(stmt.toString());
+        final ResultSet rs = stmt.executeQuery();
+        return extract(rs);
     }
 
     T load(final Long id,

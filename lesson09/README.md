@@ -1,21 +1,23 @@
 Группа 2017-04-1
 
-## Cache engine
+## Web server
 
 _**Следует учесть, что данные тесты имеют только учебный характер
 и никак не подходят для боевых условий.**_
 
 
 Цель проекта
-* Написать свой cache engine с soft references.
-* Добавить кэширование в DBService из заданий [9](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/master/lesson09)
- и [10](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson10/lesson09)
-
+* Встроить веб сервер в приложение из задания [11](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson11/lesson09)
+* Сделать админскую страницу, на которой админ должен авторизоваться и получить доступ к параметрам и
+  состоянию кэша.
+  
 ## 
-`ru.otus.chepiov.l11.CacheEngine` - интерфейс cache engine
+`ru.otus.chepiov.l9.test.RunWebServer` - раннер сервера
 
-`ru.otus.chepiov.l11.SoftRefCacheEngine` - реализация
+`ru.otus.chepiov.l12.AdminServlet` - асинхронный сервлет админки
+`ru.otus.chepiov.l12.LoginServlet` - сервлет авторизации
+`ru.otus.chepiov.l12.LoginFilter` - фильтр проверки авторизации
 
-`ru.otus.chepiov.l11.SoftRefCacheEngineMBean` - MBean интерфейс для cache engine
+логин/пароль - admin/admin
 
-Так же добавлен `Ehcache` как L2-cache для имплементации DBService на основе `Hibernate`.
+В качестве template-engine используется Jade4j.
