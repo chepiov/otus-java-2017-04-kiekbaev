@@ -14,6 +14,7 @@
 * [Сервис сохранения данных, упрощенная JPA ORM и Hibernate](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson10/lesson09)
 * [Soft references cache engine](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson11/lesson09)
 * [Web server](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson12/lesson09)
+* [Spring in web server](https://github.com/chepiov/otus-java-2017-04-kiekbaev/tree/lesson13/lesson09)
 ### Автор 
 Anvar Kiekbaev (Анвар Киекбаев)
 
