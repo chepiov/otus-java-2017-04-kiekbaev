@@ -15,6 +15,7 @@ _**Следует учесть, что данные тесты имеют тол
 Spring context создается во время старта приложения при помощи `@WebListener`:
  
 `ru.otus.chepiov.l13.Starter`
+
 Сервлет авторизации запускается при помощи `@WebServlet`:
 
 `ru.otus.chepiov.l12.LoginServlet`
