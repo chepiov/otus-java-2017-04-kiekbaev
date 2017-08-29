@@ -3,6 +3,7 @@ package ru.otus.chepiov.l12;
 import de.neuland.jade4j.template.JadeTemplate;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import static ru.otus.chepiov.l12.TemplateHelper.CONFIG;
 /**
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
+@WebServlet(urlPatterns = "/")
 public class LoginServlet extends HttpServlet {
 
     private static Map<String, String> REPOSITORY = Collections.unmodifiableMap(new HashMap<String, String>() {{

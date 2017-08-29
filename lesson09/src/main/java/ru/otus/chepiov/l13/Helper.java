@@ -1,11 +1,11 @@
-package ru.otus.chepiov.l9.test;
+package ru.otus.chepiov.l13;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.h2.tools.RunScript;
 import ru.otus.chepiov.db.api.DBService;
 import ru.otus.chepiov.db.model.Address;
@@ -30,51 +30,51 @@ import java.util.function.Supplier;
  *
  * @author <a href="mailto:a.kiekbaev@chepiov.org">Anvar Kiekbaev</a>
  */
-class Helper {
+public class Helper {
 
-    static final String JDBC_H2_TEST_URL = "jdbc:h2:~/test";
-    static final String H2_DRIVER = "org.h2.Driver";
-    static final String H2_DATASOURCE = "org.h2.jdbcx.JdbcDataSource";
+    public static final String JDBC_H2_TEST_URL = "jdbc:h2:~/test";
+    public static final String H2_DRIVER = "org.h2.Driver";
+    public static final String H2_DATASOURCE = "org.h2.jdbcx.JdbcDataSource";
 
     private Helper() {
         throw new AssertionError("Non-instantiable");
     }
 
-    static void loadDriver() throws ClassNotFoundException {
+    public static void loadDriver() throws ClassNotFoundException {
         Class.forName(H2_DRIVER);
     }
 
 
-    static void prepareDb() throws LiquibaseException, SQLException {
+    public static void prepareDb() throws LiquibaseException, SQLException {
         Connection conn = DriverManager.getConnection(JDBC_H2_TEST_URL);
         Database database = DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(new JdbcConnection(conn));
-        final Liquibase liquibase = new Liquibase("src/test/resources/lb-create.changelog.yaml",
-                new FileSystemResourceAccessor(), database);
+        final Liquibase liquibase = new Liquibase("lb-create.changelog.yaml",
+                new ClassLoaderResourceAccessor(), database);
         liquibase.clearCheckSums();
         liquibase.update("test");
         conn.close();
     }
 
-    static void clearTables() throws SQLException, LiquibaseException {
+    public static void clearTables() throws SQLException, LiquibaseException {
         Connection conn = DriverManager.getConnection(JDBC_H2_TEST_URL);
         Database database = DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(new JdbcConnection(conn));
-        final Liquibase liquibase = new Liquibase("src/test/resources/lb-clear.changelog.yaml",
-                new FileSystemResourceAccessor(), database);
+        final Liquibase liquibase = new Liquibase("lb-clear.changelog.yaml",
+                new ClassLoaderResourceAccessor(), database);
         liquibase.update("test");
         liquibase.clearCheckSums();
         conn.close();
     }
 
-    static void clearDb() throws SQLException, FileNotFoundException {
+    public static void clearDb() throws SQLException, FileNotFoundException {
         Connection conn = DriverManager.getConnection(JDBC_H2_TEST_URL);
         @SuppressWarnings("ConstantConditions")
-        File script = new File(OrmTest.class.getClassLoader().getResource("clear.h2.sql").getFile());
+        File script = new File(Helper.class.getClassLoader().getResource("clear.h2.sql").getFile());
         RunScript.execute(conn, new FileReader(script));
     }
 
-    static User createIronMan() {
+    public static User createIronMan() {
         final User ironMan = new User();
         ironMan.setName("Tony Stark");
         ironMan.setAge(45);
@@ -92,7 +92,7 @@ class Helper {
         return ironMan;
     }
 
-    static void runAwait(final Supplier<DBService> serviceSup) throws InterruptedException, ClassNotFoundException, SQLException, LiquibaseException, IOException {
+    public static void runAwait(final Supplier<DBService> serviceSup) throws InterruptedException, ClassNotFoundException, SQLException, LiquibaseException, IOException {
 
         System.out.println(ManagementFactory.getRuntimeMXBean().getName());
 

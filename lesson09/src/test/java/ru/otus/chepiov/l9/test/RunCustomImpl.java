@@ -6,6 +6,8 @@ import ru.otus.chepiov.db.api.DataSet;
 import ru.otus.chepiov.db.model.Address;
 import ru.otus.chepiov.db.model.Phone;
 import ru.otus.chepiov.db.model.User;
+import ru.otus.chepiov.l11.SoftRefCacheEngine;
+import ru.otus.chepiov.l13.Helper;
 import ru.otus.chepiov.l9.Executor;
 
 import java.io.IOException;
@@ -29,7 +31,8 @@ public class RunCustomImpl {
                     add(Address.class);
                     add(Phone.class);
                 }},
-                10);
+                10,
+                 new SoftRefCacheEngine<>());
         Helper.runAwait(() -> service);
     }
 }

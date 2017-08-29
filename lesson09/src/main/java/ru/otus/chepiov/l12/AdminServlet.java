@@ -3,6 +3,7 @@ package ru.otus.chepiov.l12;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.template.FileTemplateLoader;
 import de.neuland.jade4j.template.JadeTemplate;
+import org.springframework.context.ApplicationContext;
 import ru.otus.chepiov.db.model.Address;
 import ru.otus.chepiov.db.model.Phone;
 import ru.otus.chepiov.db.model.User;
@@ -12,6 +13,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,9 +30,13 @@ public class AdminServlet extends HttpServlet {
 
     private final Executor executor;
 
+    public AdminServlet(final Executor executor, final ApplicationContext context) {
+        if (Objects.nonNull(executor)) {
+            this.executor = executor;
+        } else {
+            this.executor = context.getBean(Executor.class);
+        }
 
-    public AdminServlet(final Executor executor) {
-        this.executor = executor;
     }
 
     @Override

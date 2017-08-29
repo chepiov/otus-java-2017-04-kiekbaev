@@ -10,6 +10,8 @@ import ru.otus.chepiov.db.model.Address;
 import ru.otus.chepiov.db.model.Phone;
 import ru.otus.chepiov.db.model.User;
 import ru.otus.chepiov.l10.HibernateDBService;
+import ru.otus.chepiov.l11.SoftRefCacheEngine;
+import ru.otus.chepiov.l13.Helper;
 import ru.otus.chepiov.l9.Executor;
 
 import java.io.FileNotFoundException;
@@ -124,7 +126,8 @@ public class OrmTest {
                                             add(Address.class);
                                             add(Phone.class);
                                         }},
-                                        10)
+                                        10,
+                                        new SoftRefCacheEngine<>())
 
                 },
                 {

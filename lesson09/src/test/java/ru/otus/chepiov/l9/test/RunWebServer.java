@@ -9,9 +9,11 @@ import ru.otus.chepiov.db.api.DataSet;
 import ru.otus.chepiov.db.model.Address;
 import ru.otus.chepiov.db.model.Phone;
 import ru.otus.chepiov.db.model.User;
+import ru.otus.chepiov.l11.SoftRefCacheEngine;
 import ru.otus.chepiov.l12.AdminServlet;
 import ru.otus.chepiov.l12.LoginFilter;
 import ru.otus.chepiov.l12.LoginServlet;
+import ru.otus.chepiov.l13.Helper;
 import ru.otus.chepiov.l9.Executor;
 
 import javax.servlet.DispatcherType;
@@ -35,7 +37,7 @@ public class RunWebServer {
                     add(Address.class);
                     add(Phone.class);
                 }},
-                10);
+                10, new SoftRefCacheEngine<>());
 
         final Server server = new Server();
         final ServerConnector connector = new ServerConnector(server);
@@ -44,7 +46,7 @@ public class RunWebServer {
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-        context.addServlet(new ServletHolder(new AdminServlet(dbService)), "/admin");
+        context.addServlet(new ServletHolder(new AdminServlet(dbService, null)), "/admin");
         context.addServlet(new ServletHolder(LoginServlet.class), "/");
 
         context.addFilter(LoginFilter.class, "/admin",

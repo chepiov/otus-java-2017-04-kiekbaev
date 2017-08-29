@@ -42,20 +42,22 @@ public final class Executor implements DBService {
 
     private final AtomicBoolean on = new AtomicBoolean(true);
 
-    private final CacheEngine<Long, User> cache = new SoftRefCacheEngine<>();
+    private final CacheEngine<Long, User> cache;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
 
     public Executor(final String driverName,
                     final String jdbcUrl,
                     final Set<Class<? extends DataSet>> entities,
-                    final int poolSize) {
+                    final int poolSize,
+                    final CacheEngine<Long, User> cacheEngine) {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         pool = new ArrayBlockingQueue<>(poolSize);
+        this.cache = cacheEngine;
 
         IntStream.iterate(0, i -> ++i).limit(poolSize).forEach(i -> {
             final Connection target;
