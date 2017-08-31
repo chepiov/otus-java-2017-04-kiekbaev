@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: chepiov
+      context: test
+      runAlways: true
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: bigint(20)
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: age
+                  type: int(3)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: name
+                  value: Peter Quill
+              - column:
+                  name: age
+                  value: 30
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: name
+                  value: Bruce Wayne
+              - column:
+                  name: age
+                  value: 40
